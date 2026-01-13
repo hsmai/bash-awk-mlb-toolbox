@@ -1,5 +1,3 @@
-# bash-awk-mlb-toolbox
-
 
 # MLB 2024 CLI Analytics (Bash + Awk)
 
