@@ -20,7 +20,9 @@ MLB 2024 시즌 **선수 성적 CSV(455×33, comma-separated)** 를 입력으로
 
 CSV Header (33 columns)
 
-Rk,Player,Age,Team,Lg,WAR,G,PA,AB,R,H,2B,3B,HR,RBI,SB,CS,BB,SO,BA,OBP,SLG,OPS,OPS+,rOBA,Rbat+,TB,GIDP,HBP,SH,SF,IBB,Pos
+Rk, Player, Age, Team, Lg, WAR, G, PA, AB, R, H, 2B, 3B, HR, RBI, SB, CS, BB, SO, BA, OBP, SLG, OPS, OPS+, rOBA, Rbat+, TB, GIDP, HBP, SH, SF, IBB, Pos
+
+<br>
 
 본 스크립트에서 주요 사용 컬럼(awk 기준)
 
