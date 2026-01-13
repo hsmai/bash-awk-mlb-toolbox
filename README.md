@@ -1,7 +1,10 @@
 # MLB 2024 Player Stats CLI (Bash + Awk)
 
 MLB 2024 시즌 **선수 성적 CSV(455×33, comma-separated)** 를 입력으로 받아,  
-**Bash + Awk 기반의 메뉴형 CLI 프로그램**으로 선수 검색, SLG Top5, 팀 통계 분석, 연령대 비교, 조건 필터링, 팀 리포트 생성을 수행합니다.
+
+**Bash + Awk 기반의 메뉴형 CLI 프로그램**으로 
+
+선수 검색, SLG Top5, 팀 통계 분석, 연령대 비교, 조건 필터링, 팀 리포트 생성을 수행합니다.
 
 ---
 
