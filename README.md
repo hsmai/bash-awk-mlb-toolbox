@@ -1,110 +1,72 @@
+# MLB 2024 Player Stats CLI (Bash + Awk)
 
-# MLB 2024 CLI Analytics (Bash + Awk)
-
-MLB 2024 시즌 선수 성적 CSV(455 rows × 33 columns)를 대상으로,  
-**Bash + Awk**만으로 검색/리더보드/팀 분석/조건 필터/리포트를 제공하는 **인터랙티브 CLI 프로그램**입니다.
-
-> 한 번 실행하면 메뉴 기반으로 1~7번 기능을 계속 수행할 수 있습니다.
+MLB 2024 시즌 **선수 성적 CSV(455×33, comma-separated)** 를 입력으로 받아,  
+**Bash + Awk 기반의 메뉴형 CLI 프로그램**으로 선수 검색, SLG Top5, 팀 통계 분석, 연령대 비교, 조건 필터링, 팀 리포트 생성을 수행합니다.
 
 ---
 
-## Features
+## Project Requirements
 
-### 1) Search player stats by name
-- 사용자 입력 `firstname lastname`로 **full name**을 구성
-- 해당 선수의 주요 스탯 출력:
-  - **Name, Team, Age, WAR, HR, BA**
-
-### 2) Top 5 players ranked by SLG (PA 조건 포함)
-- 사용자 의사(y/n)를 `case`로 처리
-- **PA >= 502** 인 선수만 대상으로
-- **SLG(22번째 필드) 내림차순** 상위 5명 출력
-
-### 3) Team stats (Average Age / Total HR / Total RBI)
-- 팀 약어(예: NYY, LAD, BOS) 입력
-- 팀 존재 여부를 먼저 검증한 뒤
-- **평균 나이, 총 HR, 총 RBI** 출력
-
-### 4) Compare players by age groups (Top 5 by SLG)
-- 나이 그룹 선택(1~3)
-  - Group A: Age < 25
-  - Group B: 25 <= Age <= 30
-  - Group C: Age > 30
-- **PA >= 502** 조건 적용
-- 각 그룹에서 **SLG 상위 5명** 출력
-
-### 5) Custom filter (HR & BA 조건) + Top 6
-- 최소 HR(정수), 최소 BA(소수) 입력
-- 입력값 형식 검증 후
-- **PA >= 502** + 조건 만족 선수만 필터링
-- **HR 내림차순 정렬 후 상위 6명** 출력
-
-### 6) Team performance report (Formatted)
-- 팀 약어 입력 후 리포트 출력
-- 실행 날짜(date) 포함
-- 팀 선수들을 **HR 기준 정렬**하여 표 형태로 출력
-- 마지막에 **팀 총 선수 수(count)** 출력
-
-### 7) Quit
-- `Have a good day!` 출력 후 종료
+- 입력: `2024_MLB_Player_Stats.csv` (CSV, comma-separated)
+- Bash script + awk 중심으로 처리 (Python/pandas 등 금지)
+- 팀/선수명 하드코딩 금지
+- 실행 시 인자 파일 존재 여부 확인 (잘못된 파일이면 사용법 출력 후 종료)
+- 학번/이름 출력(whoami)
+- 메뉴 기반으로 1~7 기능 수행, 7(Quit) 선택 전까지 반복
 
 ---
 
-## Dataset Assumptions (CSV Column Index)
+## Dataset Format
 
-이 스크립트는 입력 CSV에서 아래 “필드 위치”를 사용합니다.  
-데이터셋 컬럼 순서가 다르면 결과가 달라질 수 있습니다.
+CSV Header (33 columns)
 
-| Metric | Field Index (awk) |
-|---|---:|
-| Player Name | $2 |
-| Age | $3 |
-| Team | $4 |
-| WAR | $6 |
-| PA | $8 |
-| HR | $14 |
-| RBI | $15 |
-| BA | $20 |
-| OBP | $21 |
-| SLG | $22 |
-| OPS | $23 |
+Rk,Player,Age,Team,Lg,WAR,G,PA,AB,R,H,2B,3B,HR,RBI,SB,CS,BB,SO,BA,OBP,SLG,OPS,OPS+,rOBA,Rbat+,TB,GIDP,HBP,SH,SF,IBB,Pos
 
----
+본 스크립트에서 주요 사용 컬럼(awk 기준)
 
-## Requirements
-- bash
-- awk
-- coreutils: `sort`, `head`, `grep`, `wc`, `date`
-
-(macOS / Linux 터미널에서 동작)
+- Player: `$2`  
+- Age: `$3`  
+- Team: `$4`  
+- WAR: `$6`  
+- PA: `$8`  
+- HR: `$14`  
+- RBI: `$15`  
+- BA: `$20`  
+- OBP: `$21`  
+- SLG: `$22`  
+- OPS: `$23`  
 
 ---
 
-## Quick Start
+## How to Run
 
-### 1) 권한 부여
+1) 실행 권한 부여  
 ```bash
 chmod +x 2025_OSS_Project1.sh
 ```
 
-### 2) 실행 (CSV 파일 인자 필수)
+2) 실행 (CSV 인자 필수)
+
 ```bash
-./2025_OSS_Project1.sh path/to/mlb_2024.csv
+./2025_OSS_Project1.sh 2024_MLB_Player_Stats.csv
+```
+
+인자가 없거나 파일이 유효하지 않으면 아래 사용법을 출력하고 종료합니다.
+
+```text
+usage: ./2025_OSS_Project1.sh file
 ```
 
 ---
 
 ## Program Flow
 
-실행 시:
+- whoami 출력 (프로젝트명 / 학번 / 이름)
+- 메뉴 출력
+- 사용자 입력에 따라 기능 실행
+- 7(Quit) 선택 전까지 반복
 
-- whoami 출력(프로젝트명/학번/이름)
-<br>
-
-- 메뉴 출력 후 사용자 입력에 따라 기능 수행
-<br>
-
-- Quit(7) 선택 전까지 반복 실행
+---
 
 ## MENU
 
@@ -120,53 +82,117 @@ chmod +x 2025_OSS_Project1.sh
 
 ---
 
-## Example Usage
+## Features
+<br>
 
-### (1) 선수 검색
+## 1) Search player statistics by name
 
-```text
-Enter a player name to search: Juan Soto
-Player stats for "Juan Soto":
-Player: Juan Soto, Team: NYY, Age: 25, WAR: 7.1, HR: 41, BA: 0.288
-```
+- 사용자에게 firstname, lastname 입력 받기
+- full name = firstname + " " + lastname 로 구성
+- awk로 해당 선수 정보 출력
+  - 출력 필드: Name, Team, Age, WAR, HR, BA
+  - 방식: -F',' 로 CSV 구분자 지정, -v full 로 awk 변수 전달
+  - 조건: $2 == full 일 때 printf로 출력
 
-### (2) SLG Top 5
+<br>
 
-```text
-Do you want to see the top 5 players by SLG? (y/n) : y
-***Top 5 Players by SLG***
-1. Player A (Team:LAD) - SLG: 0.650, HR: 45, RBI: 110
-...
-```
+## 2) List the top 5 players ranked by SLG
 
-### (3) 팀 리포트
+- 사용자에게 기능 사용 여부(y/n) 입력 받기
+- case로 y/n/기타 입력 처리
 
-```text
-================== LAD PLAYER REPORT ==================
-Date: 2026/01/13
----------------------------------------------------------
-PLAYER                HR   RBI   AVG   OBP   OPS
----------------------------------------------------------
-Mookie Betts          27   80   0.295 0.380 0.900
-...
-TEAM TOTALS: 14 players
-```
+- y인 경우:
+  - PA < 502 제외
+  - SLG(22번째 필드) 기준 내림차순 정렬
+  - 상위 5명 출력
+  - sort 옵션: sort -t, -k22 -nr
+  - head -n 5 적용
+  - awk -F',' 로 필요한 필드 출력
 
----
+- n인 경우:
+  - 원하면 y를 입력하라는 메시지 출력
 
-## Notes
+- 잘못된 입력:
+  - y 또는 n을 입력하라는 메시지 출력
 
-- 리더보드(Top N) 관련 기능은 PA >= 502 조건을 사용합니다.
+<br>
 
-- 팀 약어는 데이터셋의 Team 필드($4)에 존재하는 값과 동일해야 합니다.
+## 3) Analyze the team statistics (Average Age / Total HR / Total RBI)
 
-- `whoami` 정보(학번/이름)는 스크립트 상단의 출력부를 수정하면 됩니다.
+- 사용자에게 팀명(약어) 입력 받기
 
----
+- 팀 유효성 검사:
+  - 명령어 치환으로 valid_team=0 또는 1 저장
+  - $4(Team) 가 입력 팀과 일치하는 행이 있다면 1, 없으면 0
 
-## Project Files
+- valid_team 이 0이면:
+  - 에러 메시지 출력 후 종료/복귀
 
-- `2025_OSS_Project1.sh` : Main CLI program (Bash + Awk)
+- awk로 팀 단위 통계 계산:
+  - $4 == team 인 행에서 age/hr/rbi 누적
+  - count 로 선수 수 계산
+  - END 에서 평균 나이(age_sum/count), 총 HR, 총 RBI 출력
+
+<br>
+
+## 4) Compare players in different age groups (Top 5 by SLG)
+
+- 공통 조건: PA < 502 제외
+- 사용자에게 나이 그룹 입력 받기
+
+- case로 그룹 분기 후 각 그룹별로:
+  - awk로 나이 조건($3) 필터 + PA 조건($8) 필터
+  - SLG(22) 기준 sort -t, -k22 -nr
+  - head -n 5
+  - awk로 필요한 필드 출력
+
+- 잘못된 그룹 입력 시:
+  - 에러 메시지 출력
+
+<br>
+
+## 5) Find players meeting custom conditions (min HR & min BA)
+
+- 사용자 입력:
+  - 최소 홈런수(min HR)
+  - 최소 타율(min BA)
+
+- 입력 검증:
+  - min HR이 정수인지 if로 검사
+  - min BA가 소수 형태인지 if로 검사
+  - 부적절하면 에러 메시지 출력
+
+- 공통 조건: PA < 502 제외
+- 홈런수 기준 내림차순 정렬
+
+- 파이프라인 형태(awk 2개 연결):
+  - 1번째 awk: 조건(PA, HR, BA) 만족 행만 추출
+  - sort로 HR 기준 정렬
+  - head -n 6
+  - 2번째 awk: 최종 출력 포맷으로 필드 출력
+
+<br>
+
+## 6) Generate performance reports for specific teams
+
+- 사용자에게 팀명 입력 받기
+
+- 리포트 출력:
+  - date 명령어로 실행 시점 날짜 출력
+
+- 팀 선수 출력(홈런 기준 정렬):
+  - awk 2개 파이프라인 구성
+  - 정렬 후 선수별 주요 필드 출력
+  - count 로 선수 수 누적
+  - END 에서 팀 총 선수 수 출력
+
+<br>
+
+## 7) Quit
+
+- Have a good day! 출력 후 프로그램 종료
+
+
 
 
 
